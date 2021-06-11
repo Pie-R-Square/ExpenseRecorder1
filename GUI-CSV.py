@@ -71,7 +71,7 @@ def Save(event=None):
 		amount = float(rate)*float(quantity)-float(discount)
 		now = datetime.now().strftime('%b %d, %Y %H:%M:%S')
 		stamp = datetime.now()
-		transactionID = stamp.strftime('%m%d%Y%H%M%f')
+		transactionID = stamp.strftime('%Y%m%d%H%M%f')
 		compound_rt_text = '  Details: {}\n     Rate: {} ฿\n Quantity: {}\n Discount: {} ฿\n__________\n   Amount: {} ฿\nTimestamp: {}\n'.format(details,str(rate),str(quantity),str(discount),str(amount),now)
 		compound_lt_text = 'Details: {}\nRate: {} ฿\nQuantity {}\nDiscount {} ฿\n__________\nAmount: {} ฿\nTimestamp: {}\n'.format(details,str(rate),str(quantity),str(discount),str(amount),now)
 		print(compound_rt_text)
@@ -185,15 +185,41 @@ headerwidth = [150,90,170,170,110,190,150]
 for h,w in zip(header, headerwidth):
 	result_table.column(h, width=w)
 
-def DeleteRecord():
-	print('Delete')
-	select = result_table.selection()
-	print(select)
-	data = result_table.item(select)
-	print(data)
+alltransaction = {}
 
-BDelete = ttk.Button(T2,text='delete',command='DeleteRecord')
+def UpdateCSV():
+	with open('Expense.csv', 'w', newline='', encoding='utf-8') as f:
+		fw = csv.writer(f)
+		# change alltransaction to list
+		data = list(alltransaction.values())
+		fw.writerows(data) # multiple line from nested list [[],[],[]]
+		print("Table was updated")
+		update_table()
+
+def DeleteRecord(event=None):
+	check = messagebox.askyesno('Conferm Delete?', 'Do you want to delete?')
+	print('Yes/No:',check)
+
+	if check == True:
+		print('Delete')
+		select = result_table.selection()
+		#print(select)
+		data = result_table.item(select)
+		data = data['values']
+		transactionID = data[-1]
+		#print(transactionID)
+		#print(type(transactionID))
+		del alltransaction[str(transactionID)]
+		#print(alltransaction)
+		UpdateCSV()
+		update_table()
+	else:
+		print("Cancel")
+
+BDelete = ttk.Button(T2,text='Delete',command=DeleteRecord)
 BDelete.place(x=50,y=550)
+
+result_table.bind('<Delete>', DeleteRecord)
 
 def update_table():
 	result_table.delete(*result_table.get_children())
@@ -202,7 +228,10 @@ def update_table():
 	try:
 		data = read_csv()
 		for d in data:
+			# create transaction data
+			alltransaction[d[-1]] = d
 			result_table.insert('', 0, value=d)
+		print(alltransaction)
 	except:
 		print("No file")
 
