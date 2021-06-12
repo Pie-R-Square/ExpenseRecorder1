@@ -297,7 +297,7 @@ def EditRecord():
 	E4.pack()
 	# ------------
 
-	def Edit():
+	def Edit(event=None):
 		print(transactionID)
 		print(alltransaction)
 		olddata = alltransaction[str(transactionID)]
@@ -319,7 +319,7 @@ def EditRecord():
 	B1 = ttk.Button(POPUP,text=f'{"Submit": >{5}}',command=Edit,image=submit_icon,compound='left')
 	B1.pack(padx=0,pady=30)
 
-	
+	POPUP.bind('<Return>', Edit)
 
 	# get data in selected record
 	select = result_table.selection()
