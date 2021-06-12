@@ -29,8 +29,8 @@ T1 = Frame(Tab)
 T2 = Frame(Tab)
 Tab.pack(fill=BOTH, expand=1)
 
-icon_T1 = PhotoImage(file='Add-icon.png')
-icon_T2 = PhotoImage(file='Wallet-icon.png')
+icon_T1 = PhotoImage(file='Images/Add-icon.png')
+icon_T2 = PhotoImage(file='Images/Wallet-icon.png')
 
 Tab.add(T1, text=f'{"Add Expense":^{15}}',image=icon_T1,compound='top')
 Tab.add(T2, text=f'{"Expense List":^{15}}',image=icon_T2,compound='top')
@@ -102,7 +102,7 @@ GUI.bind('<Return>',Save)
 
 FONT1 = (None,15)
 
-center_img = PhotoImage(file='list-icon.png')
+center_img = PhotoImage(file='Images/list-icon.png')
 logo = ttk.Label(F1,image=center_img)
 logo.pack()
 
@@ -134,7 +134,7 @@ E4 = ttk.Entry(F1,textvariable=v_discount,font=FONT1)
 E4.pack()
 # ------------
 
-submit_icon = PhotoImage(file='save-icon.png')
+submit_icon = PhotoImage(file='Images/save-icon.png')
 
 B1 = ttk.Button(F1,text=f'{"Submit": >{5}}',command=Save,image=submit_icon,compound='left')
 B1.pack(padx=0,pady=30)
