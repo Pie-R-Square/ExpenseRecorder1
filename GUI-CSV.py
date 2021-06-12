@@ -5,7 +5,22 @@ from datetime import datetime
 
 GUI = Tk()
 GUI.title('Expense Record')
-GUI.geometry('1200x650+0+30')
+#GUI.geometry('1200x650+0+30')
+
+#GUI.geometry('650x750+1000+100')
+
+w = 1200
+h = 650
+
+ws = GUI.winfo_screenwidth() #screen width
+hs = GUI.winfo_screenheight() #screen height
+
+
+x = (ws/2) - (w/2)
+y = (hs/2) - (h/2)
+
+GUI.geometry(f'{w}x{h}+{x:.0f}+{y:.0f}')
+
 
 ############MENU##############
 
@@ -234,6 +249,102 @@ def update_table():
 		print(alltransaction)
 	except:
 		print("No file")
+
+################Right click##################
+
+def EditRecord():
+	POPUP = Toplevel()
+	POPUP.title('Edit Record')
+	#POPUP.geometry('500x500')
+
+	w = 500
+	h = 500
+
+	ws = POPUP.winfo_screenwidth() #screen width
+	hs = POPUP.winfo_screenheight() #screen height
+
+
+	x = (ws/2) - (w/2)
+	y = (hs/2) - (h/2)
+
+	POPUP.geometry(f'{w}x{h}+{x:.0f}+{y:.0f}')
+
+	# ---Text 1---
+	L = ttk.Label(POPUP,text='Details',font=FONT1).pack()
+	v_details = StringVar()
+	E1 = ttk.Entry(POPUP,textvariable=v_details,font=FONT1)
+	E1.pack()
+	# ------------
+
+	# ---Text 2---
+	L = ttk.Label(POPUP,text='Rate',font=FONT1).pack()
+	v_rate = StringVar()
+	E2 = ttk.Entry(POPUP,textvariable=v_rate,font=FONT1)
+	E2.pack()
+	# ------------
+
+	# ---Text 3---
+	L = ttk.Label(POPUP,text='Quantity',font=FONT1).pack()
+	v_quantity = StringVar()
+	E3 = ttk.Entry(POPUP,textvariable=v_quantity,font=FONT1)
+	E3.pack()
+	# ------------
+
+	# ---Text 4---
+	L = ttk.Label(POPUP,text='Discount',font=FONT1).pack()
+	v_discount = StringVar()
+	E4 = ttk.Entry(POPUP,textvariable=v_discount,font=FONT1)
+	E4.pack()
+	# ------------
+
+	def Edit():
+		print(transactionID)
+		print(alltransaction)
+		olddata = alltransaction[str(transactionID)]
+		print('OLD:', olddata)
+		v1 = v_details.get()
+		v2 = float(v_rate.get())
+		v3 = float(v_quantity.get())
+		v4 = float(v_discount.get())
+		amount = v2 * v3 - v4
+		newdata = [v1, v2, v3, v4, amount, olddata[-2], olddata[-1]]
+		alltransaction[str(transactionID)] = newdata
+		UpdateCSV()
+		update_table()
+
+		POPUP.destroy()
+
+	submit_icon = PhotoImage(file='Images/save-icon.png')
+
+	B1 = ttk.Button(POPUP,text=f'{"Submit": >{5}}',command=Edit,image=submit_icon,compound='left')
+	B1.pack(padx=0,pady=30)
+
+	
+
+	# get data in selected record
+	select = result_table.selection()
+	print(select)
+	data = result_table.item(select)
+	data = data['values']
+	print(data)
+	transactionID = data[-1]
+
+	v_details.set(data[0])
+	v_rate.set(data[1])
+	v_quantity.set(data[2])
+	v_discount.set(data[3])
+
+	POPUP.mainloop()
+
+rightclick = Menu(GUI,tearoff=0)
+rightclick.add_command(label='Edit', command=EditRecord)
+rightclick.add_command(label='Delete', command=DeleteRecord)
+
+def menupopup(event):
+	#print(event.x_root, event.y_root)
+	rightclick.post(event.x_root, event.y_root)
+
+GUI.bind('<Button-3>', menupopup)
 
 update_table()
 
