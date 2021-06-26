@@ -38,7 +38,35 @@ def insert_expense(details, rate, quantity, discount, amount, now, transactionID
 		c.execute("""INSERT INTO expenseList VALUES (?,?,?,?,?,?,?,?)""",
 			(ID, details, rate, quantity, discount, amount, now, transactionID))
 		conn.commit() # record data to database
-		print("Insert succeed")
+		#print("Insert succeed")
+
+def show_expense():
+	with conn:
+		c.execute("SELECT * FROM expenseList")
+		expense = c.fetchall()
+		#print(expense)
+
+	return expense
+
+def update_expense(details, rate, quantity, discount, amount, transactionID):
+	with conn:
+		c.execute("""UPDATE expenseList SET details = ?, rate = ?, quantity = ?, discount = ?, amount = ? WHERE transactionID=(?)""",
+			([details, rate, quantity, discount, amount, transactionID]))
+	conn.commit()
+	#print("Data updated")
+
+
+def delete_expense():
+	with conn:
+		c.execute("DELETE FROM expenseList WHERE transactionID = ?", ([transactionID]))
+	conn.commit()
+	#print("Data deleted")
+
+#update_expense()
+
+#delete_expense('202106122035757646')
+show_expense()
+
 ##########
 
 GUI = Tk()
@@ -251,6 +279,12 @@ def UpdateCSV():
 		print("Table was updated")
 		update_table()
 
+def UpdateSQL():
+	data = list(alltransaction.values())
+	#print(data[0])
+	for d in data:
+		update_expense(d[0], d[1], d[2], d[3], d[4], d[-1])
+
 def DeleteRecord(event=None):
 	check = messagebox.askyesno('Conferm Delete?', 'Do you want to delete?')
 	print('Yes/No:',check)
@@ -266,7 +300,8 @@ def DeleteRecord(event=None):
 		#print(type(transactionID))
 		del alltransaction[str(transactionID)]
 		#print(alltransaction)
-		UpdateCSV()
+		#UpdateCSV()
+		delete_expense(str(transactionID))
 		update_table()
 	else:
 		print("Cancel")
@@ -281,11 +316,11 @@ def update_table():
 	# for c in result_table.get_children():
 	# 	result_table.delete(c)
 	try:
-		data = read_csv()
+		data = show_expense() #read_csv()
 		for d in data:
 			# create transaction data
-			alltransaction[d[-1]] = d
-			result_table.insert('', 0, value=d)
+			alltransaction[d[-1]] = d[1:]
+			result_table.insert('', 0, value=d[1:])
 		print(alltransaction)
 	except:
 		print("No file")
@@ -349,7 +384,8 @@ def EditRecord():
 		amount = v2 * v3 - v4
 		newdata = [v1, v2, v3, v4, amount, olddata[-2], olddata[-1]]
 		alltransaction[str(transactionID)] = newdata
-		UpdateCSV()
+		#UpdateCSV()
+		UpdateSQL()
 		update_table()
 
 		POPUP.destroy()
